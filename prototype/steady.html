@@ -1,0 +1,620 @@
+<title>Steady Screens</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: a design board. Phone frames laid out left-to-right in flow order, wrapping; one column on phones. */
+:root{
+  /* page canvas (theme-aware) */
+  --page-bg:#E6E8EE; --page-fg:#12141C; --page-muted:#5E6475; --frame-line:#D3D7E0; --frame-shadow:0 30px 60px -30px rgba(18,20,28,.35);
+  /* app tokens (Steady light mode; the app itself is designed light-only for now) */
+  --a-canvas:#F3F4F7; --a-surface:#FFFFFF; --a-subtle:#ECEEF3; --a-ink:#12141C; --a-ink2:#5E6475; --a-ink3:#9096A6;
+  --a-line:#E3E6ED; --a-line2:#C9CEDA; --a-brand:#2E5BFF; --a-brand-press:#1F45D6; --a-brand-soft:#E9EEFF; --a-on-brand:#FFFFFF;
+  --a-pos:#17A06A; --a-pos-soft:#E4F6EE;
+  --g-travel:#2E7BF6; --g-travel-soft:#E6F0FF; --g-emergency:#17A06A; --g-emergency-soft:#E4F6EE;
+  --g-car:#E9792B; --g-car-soft:#FFF0E5; --g-move:#7B55E8; --g-move-soft:#F0EBFF;
+  --font:"Plus Jakarta Sans", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --r-sm:12px; --r-md:16px; --r-lg:20px; --r-xl:24px;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --page-bg:#0E1016; --page-fg:#EEF0F5; --page-muted:#9AA0B0; --frame-line:#2A2E3A; --frame-shadow:0 30px 60px -30px rgba(0,0,0,.8); color-scheme:dark } }
+:root[data-theme="dark"]{ --page-bg:#0E1016; --page-fg:#EEF0F5; --page-muted:#9AA0B0; --frame-line:#2A2E3A; --frame-shadow:0 30px 60px -30px rgba(0,0,0,.8); color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--page-bg); color:var(--page-fg); font-family:var(--font); padding:40px 16px 80px; -webkit-font-smoothing:antialiased}
+.wrap{max-width:1760px; margin:0 auto}
+.intro{display:flex; flex-wrap:wrap; gap:24px 48px; align-items:flex-end; justify-content:space-between; margin-bottom:48px}
+.intro h1{font-size:40px; letter-spacing:-1.5px; margin:0 0 8px; display:flex; align-items:center; gap:12px; text-wrap:balance}
+.intro p{margin:0; max-width:60ch; color:var(--page-muted); font-size:15px; line-height:1.55}
+.swatches{display:flex; flex-wrap:wrap; gap:8px}
+.sw{display:flex; align-items:center; gap:8px; font-size:12px; color:var(--page-muted); padding:6px 10px 6px 6px; border:1px solid var(--frame-line); border-radius:999px}
+.sw i{width:18px; height:18px; border-radius:50%; display:block}
+h2.group{font-size:13px; text-transform:uppercase; letter-spacing:.12em; color:var(--page-muted); font-weight:700; margin:0 0 20px}
+.board{display:flex; flex-wrap:wrap; gap:48px 40px; margin-bottom:72px}
+.shot{width:min(393px,100%); display:flex; flex-direction:column; gap:12px; min-width:0}
+.cap{display:flex; gap:10px; align-items:baseline; font-size:14px; font-weight:600}
+.cap span{color:var(--page-muted); font-variant-numeric:tabular-nums; font-weight:500}
+.cap em{font-style:normal; font-weight:500; color:var(--page-muted); margin-left:auto; font-size:12px}
+
+/* ---------- phone ---------- */
+.phone{width:100%; height:852px; border-radius:48px; background:var(--a-canvas); color:var(--a-ink); border:1px solid var(--frame-line); box-shadow:var(--frame-shadow);
+  overflow:hidden; display:flex; flex-direction:column; position:relative; transition:box-shadow .3s; font-size:15px; line-height:22px}
+.phone.tall{height:auto}
+.phone.flash{box-shadow:0 0 0 4px var(--a-brand), var(--frame-shadow)}
+.phone.white{background:var(--a-surface)}
+.status{height:54px; flex:none; display:flex; justify-content:space-between; align-items:center; padding:6px 32px 0 40px; font-weight:700; font-size:16px}
+.status svg{display:block}
+.screen{flex:1; min-height:0; overflow-y:auto; padding:8px 24px 0; display:flex; flex-direction:column; gap:24px; scrollbar-width:none}
+.screen::-webkit-scrollbar{display:none}
+.foot{flex:none; padding:16px 24px 0; display:flex; flex-direction:column; gap:8px}
+.home{height:34px; flex:none; display:flex; align-items:flex-end; justify-content:center; padding-bottom:8px}
+.home i{width:134px; height:5px; border-radius:3px; background:var(--a-ink); display:block}
+
+/* type */
+.h1{font-size:28px; line-height:34px; letter-spacing:-.8px; font-weight:700; margin:0; text-wrap:balance}
+.h2{font-size:22px; line-height:28px; letter-spacing:-.5px; font-weight:700; margin:0}
+.h3{font-size:17px; line-height:22px; letter-spacing:-.2px; font-weight:600; margin:0}
+.sub{color:var(--a-ink2); margin:8px 0 0; font-size:15px; line-height:22px}
+.small{font-size:13px; line-height:18px; font-weight:500; color:var(--a-ink2)}
+.cap-t{font-size:12px; line-height:16px; font-weight:500; color:var(--a-ink2)}
+.num{font-variant-numeric:tabular-nums}
+
+/* controls */
+button{font-family:inherit; cursor:pointer}
+button:focus-visible, input:focus-visible, select:focus-visible{outline:3px solid var(--a-brand); outline-offset:2px}
+.btn{height:56px; border-radius:999px; border:0; font-size:16px; font-weight:600; letter-spacing:-.1px; display:flex; align-items:center; justify-content:center; gap:8px; width:100%; transition:background .15s}
+.btn.primary{background:var(--a-brand); color:var(--a-on-brand)} .btn.primary:hover{background:var(--a-brand-press)}
+.btn.dark{background:var(--a-ink); color:var(--a-surface)}
+.btn.ghost{background:transparent; color:var(--a-brand)}
+.btn.sm{height:40px; font-size:14px; width:auto; padding:0 18px}
+.btn.secondary{background:var(--a-subtle); color:var(--a-ink)}
+.ico{width:24px; height:24px; flex:none; stroke:currentColor; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round}
+.ico.s{width:16px; height:16px} .ico.xs{width:14px; height:14px}
+
+.stephead{display:flex; align-items:center; gap:16px; padding:4px 0 0}
+.back{width:40px; height:40px; border-radius:50%; background:var(--a-surface); border:0; display:grid; place-items:center; color:var(--a-ink)}
+.steps{flex:1; display:flex; gap:6px} .steps i{flex:1; height:4px; border-radius:2px; background:var(--a-line)} .steps i.on{background:var(--a-brand)}
+
+.card{background:var(--a-surface); border-radius:var(--r-lg); padding:16px}
+.badge{width:44px; height:44px; border-radius:14px; display:grid; place-items:center; flex:none}
+.b-travel{background:var(--g-travel-soft); color:var(--g-travel)} .b-emergency{background:var(--g-emergency-soft); color:var(--g-emergency)}
+.b-car{background:var(--g-car-soft); color:var(--g-car)} .b-move{background:var(--g-move-soft); color:var(--g-move)}
+.b-brand{background:var(--a-brand-soft); color:var(--a-brand)}
+
+/* welcome */
+.logo{width:56px; height:56px; border-radius:18px; background:var(--a-brand); display:grid; place-items:center}
+.word{font-weight:800; font-size:22px; letter-spacing:-.6px}
+.values{display:flex; flex-direction:column; gap:16px}
+.value{display:flex; gap:14px; align-items:flex-start}
+.value .badge{width:40px; height:40px; border-radius:12px}
+.value b{display:block; font-weight:600; font-size:15px}
+.hero-amt{background:var(--a-surface); border-radius:var(--r-xl); padding:20px; display:flex; flex-direction:column; gap:16px}
+.mini-row{display:flex; align-items:center; gap:12px}
+.mini-row > div{flex:1; min-width:0}
+.track{height:8px; border-radius:4px; background:var(--a-subtle); overflow:hidden}
+.track > i{display:block; height:100%; border-radius:4px; transition:width .4s}
+
+/* bank */
+.search{display:flex; align-items:center; gap:10px; background:var(--a-surface); border-radius:var(--r-md); padding:0 16px; height:52px; color:var(--a-ink3)}
+.list{background:var(--a-surface); border-radius:var(--r-lg); overflow:hidden}
+.bank{display:flex; align-items:center; gap:14px; padding:14px 16px; width:100%; background:none; border:0; text-align:left; color:inherit; font-size:15px; border-top:1px solid var(--a-line)}
+.bank:first-child{border-top:0}
+.bank .init{width:40px; height:40px; border-radius:12px; background:var(--a-subtle); display:grid; place-items:center; font-weight:700; font-size:14px; color:var(--a-ink2)}
+.bank .nm{flex:1; font-weight:600}
+.radio{width:22px; height:22px; border-radius:50%; border:1.5px solid var(--a-line2); display:grid; place-items:center; flex:none}
+.bank[aria-checked="true"] .radio{border:0; background:var(--a-brand); color:#fff}
+.bank[aria-checked="false"] .radio svg{display:none}
+.secure{display:flex; gap:12px; align-items:flex-start; padding:14px 16px; border-radius:var(--r-md); background:var(--a-pos-soft); color:#0E6B46}
+.secure p{margin:0; font-size:13px; line-height:18px; font-weight:500}
+
+/* income */
+.amount-field{display:flex; align-items:baseline; gap:4px; border-bottom:2px solid var(--a-brand); padding-bottom:8px}
+.amount-field span{font-size:40px; font-weight:700; letter-spacing:-1.5px; color:var(--a-ink3)}
+.amount-field input{border:0; background:transparent; font:inherit; font-size:40px; font-weight:700; letter-spacing:-1.5px; width:100%; color:var(--a-ink); outline:none; font-variant-numeric:tabular-nums; padding:0}
+.found{display:flex; gap:12px; align-items:flex-start; background:var(--a-surface); border-radius:var(--r-md); padding:14px 16px}
+.found p{margin:0; font-size:13px; line-height:18px; color:var(--a-ink2)} .found b{color:var(--a-ink); font-weight:600}
+.chips{display:flex; flex-wrap:wrap; gap:8px}
+.chip{height:40px; padding:0 16px; border-radius:999px; border:1px solid var(--a-line); background:var(--a-surface); font-size:14px; font-weight:600; color:var(--a-ink)}
+.chip[aria-pressed="true"]{background:var(--a-ink); color:var(--a-surface); border-color:var(--a-ink)}
+.label{font-size:13px; font-weight:600; color:var(--a-ink2); margin:0 0 10px}
+
+/* goals */
+.tiles{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+.tile{background:var(--a-surface); border:1px solid var(--a-line); border-radius:var(--r-lg); padding:16px; text-align:left; display:flex; flex-direction:column; gap:14px; color:inherit; transition:border-color .15s, background .15s}
+.tile .top{display:flex; justify-content:space-between; align-items:flex-start}
+.tile .chk{width:24px; height:24px; border-radius:50%; border:1.5px solid var(--a-line2); display:grid; place-items:center; color:#fff}
+.tile .chk svg{opacity:0}
+.tile[aria-pressed="true"]{border:2px solid var(--a-brand); background:var(--a-brand-soft); padding:15px}
+.tile[aria-pressed="true"] .chk{background:var(--a-brand); border:0} .tile[aria-pressed="true"] .chk svg{opacity:1}
+.tile b{display:block; font-weight:600; font-size:15px; line-height:20px}
+
+/* targets */
+.tcard{background:var(--a-surface); border-radius:var(--r-lg); padding:16px; display:flex; flex-direction:column; gap:14px}
+.tcard .head{display:flex; align-items:center; gap:12px}
+.fields{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+.field{background:var(--a-canvas); border-radius:var(--r-sm); padding:8px 12px; display:flex; flex-direction:column; gap:2px; min-width:0}
+.field label{font-size:12px; font-weight:500; color:var(--a-ink2)}
+.field input, .field select{border:0; background:transparent; font:inherit; font-weight:600; font-size:15px; color:var(--a-ink); padding:0; width:100%; outline:none; appearance:none; -webkit-appearance:none}
+.hint{display:flex; gap:8px; align-items:flex-start; font-size:12px; line-height:16px; color:var(--a-ink2); font-weight:500}
+
+/* plan */
+.pill{display:inline-flex; align-items:center; gap:6px; height:28px; padding:0 12px 0 10px; border-radius:999px; background:var(--a-brand-soft); color:var(--a-brand); font-size:13px; font-weight:600; align-self:flex-start}
+.big{font-size:40px; line-height:48px; font-weight:700; letter-spacing:-1.5px}
+.stack{display:flex; height:10px; border-radius:5px; overflow:hidden; gap:3px}
+.stack i{display:block; height:100%; border-radius:3px}
+.rows{display:flex; flex-direction:column}
+.row{display:flex; justify-content:space-between; align-items:center; padding:10px 0; font-size:15px; gap:12px}
+.row .k{display:flex; align-items:center; gap:10px; color:var(--a-ink2)}
+.row .k i{width:10px; height:10px; border-radius:3px; display:block}
+.row .v{font-weight:600; font-variant-numeric:tabular-nums}
+.row.total{border-top:1px solid var(--a-line); margin-top:4px; padding-top:14px}
+.row.total .k{color:var(--a-ink); font-weight:600}
+.row.total .v{color:var(--a-brand)}
+.seg{display:grid; grid-template-columns:repeat(3,1fr); gap:8px}
+.opt{background:var(--a-surface); border:1px solid var(--a-line); border-radius:var(--r-md); padding:12px 10px; display:flex; flex-direction:column; gap:2px; align-items:center; color:inherit}
+.opt b{font-size:17px; font-weight:700; font-variant-numeric:tabular-nums}
+.opt span{font-size:12px; color:var(--a-ink2); font-weight:500}
+.opt[aria-pressed="true"]{border:2px solid var(--a-brand); padding:11px 9px; background:var(--a-brand-soft)}
+.split{display:flex; flex-direction:column; gap:14px}
+.split-row{display:flex; align-items:center; gap:12px}
+.split-row > div{flex:1; min-width:0}
+.split-row .amt{font-weight:700; font-variant-numeric:tabular-nums; text-align:right}
+.split-row .amt small{display:block; font-weight:500; font-size:12px; color:var(--a-ink2)}
+.ok{color:var(--a-pos)} .late{color:var(--g-car)}
+
+/* done */
+.done-mark{width:72px; height:72px; border-radius:50%; background:var(--a-pos-soft); color:var(--a-pos); display:grid; place-items:center}
+.done-mark .ico{width:36px; height:36px; stroke-width:2.2}
+
+/* dashboard */
+.topbar{display:flex; align-items:center; gap:12px}
+.avatar{width:40px; height:40px; border-radius:50%; background:var(--a-ink); color:var(--a-surface); display:grid; place-items:center; font-weight:700; font-size:15px}
+.iconbtn{width:40px; height:40px; border-radius:50%; background:var(--a-surface); border:0; display:grid; place-items:center; color:var(--a-ink); position:relative}
+.dot{position:absolute; top:9px; right:10px; width:8px; height:8px; border-radius:50%; background:var(--a-brand); border:2px solid var(--a-surface)}
+.total-card{background:var(--a-brand); color:var(--a-on-brand); border-radius:var(--r-xl); padding:20px; display:flex; flex-direction:column; gap:18px}
+.total-card .lbl{font-size:13px; font-weight:500; opacity:.8}
+.total-card .big{color:#fff}
+.total-card .gain{display:inline-flex; align-items:center; gap:6px; background:rgba(255,255,255,.16); border-radius:999px; height:28px; padding:0 12px 0 8px; font-size:13px; font-weight:600}
+.next{background:rgba(255,255,255,.12); border-radius:var(--r-md); padding:12px 12px 12px 14px; display:flex; align-items:center; gap:12px}
+.next > div{flex:1; min-width:0}
+.next .t1{font-size:12px; opacity:.8; font-weight:500} .next .t2{font-weight:600; font-size:15px}
+.next .btn{background:#fff; color:var(--a-brand)}
+.tip{background:var(--a-surface); border-radius:var(--r-lg); padding:16px; display:flex; flex-direction:column; gap:14px; border:1px solid var(--a-brand-soft)}
+.tip p{margin:0; font-size:15px; line-height:22px}
+.tip .acts{display:flex; gap:8px}
+.sec-h{display:flex; justify-content:space-between; align-items:center}
+.link{background:none; border:0; color:var(--a-brand); font-weight:600; font-size:14px; display:flex; align-items:center; gap:4px; padding:0}
+.gcard{background:var(--a-surface); border-radius:var(--r-lg); padding:16px; display:flex; flex-direction:column; gap:14px}
+.gcard .r{display:flex; align-items:center; gap:12px}
+.gcard .r > div{flex:1; min-width:0}
+.gcard .pct{font-weight:600; font-variant-numeric:tabular-nums}
+.gfoot{display:flex; align-items:center; gap:6px; font-size:12px; color:var(--a-ink2); font-weight:500; flex-wrap:wrap}
+.gfoot .tag{margin-left:auto; display:inline-flex; align-items:center; gap:4px; font-weight:600}
+.act{display:flex; align-items:center; gap:12px; padding:12px 0; border-top:1px solid var(--a-line)}
+.act:first-child{border-top:0; padding-top:0} .act:last-child{padding-bottom:0}
+.act > div{flex:1; min-width:0}
+.act .badge{width:40px; height:40px; border-radius:12px}
+.act .v{font-weight:600; font-variant-numeric:tabular-nums; color:var(--a-pos)}
+.tabbar{flex:none; background:var(--a-surface); border-top:1px solid var(--a-line); position:sticky; bottom:0}
+.tabs{display:flex; justify-content:space-around; padding:10px 12px 0}
+.tab{display:flex; flex-direction:column; align-items:center; gap:4px; font-size:12px; font-weight:500; color:var(--a-ink3); width:72px; background:none; border:0}
+.tab.on{color:var(--a-brand)}
+.toast{background:var(--a-pos-soft); color:#0E6B46; border-radius:var(--r-md); padding:12px 14px; display:flex; gap:10px; align-items:center; font-size:14px; font-weight:600}
+
+@media (prefers-reduced-motion: reduce){ *{transition:none!important; scroll-behavior:auto!important} }
+@media (max-width:440px){ body{padding-top:24px} .intro h1{font-size:32px} .phone{border-radius:36px} }
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-plane" viewBox="0 0 24 24"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></symbol>
+    <symbol id="i-car" viewBox="0 0 24 24"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></symbol>
+    <symbol id="i-box" viewBox="0 0 24 24"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="m7.5 4.27 9 5.15"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+    <symbol id="i-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+    <symbol id="i-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></symbol>
+    <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></symbol>
+    <symbol id="i-bank" viewBox="0 0 24 24"><path d="M3 22h18"/><path d="M6 18v-7"/><path d="M10 18v-7"/><path d="M14 18v-7"/><path d="M18 18v-7"/><path d="M12 2 20 7H4z"/></symbol>
+    <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></symbol>
+    <symbol id="i-list" viewBox="0 0 24 24"><path d="M3 12h.01"/><path d="M3 18h.01"/><path d="M3 6h.01"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M8 6h13"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
+    <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></symbol>
+    <symbol id="i-up" viewBox="0 0 24 24"><path d="M16 7h6v6"/><path d="m22 7-8.5 8.5-5-5L2 17"/></symbol>
+    <symbol id="i-steady" viewBox="0 0 24 24"><rect x="3" y="13" width="4.5" height="8" rx="2.25" fill="currentColor" stroke="none"/><rect x="9.75" y="8.5" width="4.5" height="12.5" rx="2.25" fill="currentColor" stroke="none"/><rect x="16.5" y="3" width="4.5" height="18" rx="2.25" fill="currentColor" stroke="none"/></symbol>
+  </defs>
+</svg>
+
+<template id="tpl-status">
+  <div class="status"><span class="num">9:41</span>
+    <svg width="68" height="13" viewBox="0 0 68 13" aria-hidden="true"><rect x="0" y="8" width="3" height="4" rx="1" fill="currentColor"/><rect x="5" y="6" width="3" height="6" rx="1" fill="currentColor"/><rect x="10" y="3" width="3" height="9" rx="1" fill="currentColor"/><rect x="15" y="0" width="3" height="12" rx="1" fill="currentColor"/><path d="M30 3.5a9 9 0 0 1 12 0l-1.4 1.5a7 7 0 0 0-9.2 0zM32.6 6.4a5 5 0 0 1 6.8 0L36 10z" fill="currentColor"/><rect x="45.5" y="0.5" width="20" height="11" rx="3.5" stroke="currentColor" stroke-opacity=".4" fill="none"/><rect x="47.5" y="2.5" width="16" height="7" rx="2" fill="currentColor"/><rect x="66.5" y="4" width="1.5" height="4" rx=".75" fill="currentColor" fill-opacity=".4"/></svg>
+  </div>
+</template>
+
+<div class="wrap">
+  <header class="intro">
+    <div>
+      <h1><span class="logo" style="width:44px;height:44px;border-radius:14px"><svg class="ico" style="color:#fff"><use href="#i-steady"/></svg></span>Steady</h1>
+      <p>Onboarding and home dashboard for a goal-based saving app. One save a month on payday, with an AI-suggested amount based on real spending. The buttons work: tap through the flow, pick goals, change your income or the plan, and the numbers update.</p>
+    </div>
+    <div class="swatches" aria-label="Colour tokens">
+      <span class="sw"><i style="background:var(--a-brand)"></i>Brand</span>
+      <span class="sw"><i style="background:var(--a-ink)"></i>Ink</span>
+      <span class="sw"><i style="background:var(--a-canvas);border:1px solid var(--frame-line)"></i>Canvas</span>
+      <span class="sw"><i style="background:var(--g-travel)"></i>Travel</span>
+      <span class="sw"><i style="background:var(--g-emergency)"></i>Emergency</span>
+      <span class="sw"><i style="background:var(--g-car)"></i>Car</span>
+      <span class="sw"><i style="background:var(--g-move)"></i>Move</span>
+    </div>
+  </header>
+
+  <h2 class="group">Onboarding</h2>
+  <section class="board">
+
+    <!-- 01 Welcome -->
+    <div class="shot"><div class="cap"><span>01</span>Welcome</div>
+      <div class="phone white" id="s1" data-status>
+        <div class="screen" style="gap:28px; padding-top:20px">
+          <div style="display:flex; align-items:center; gap:10px"><span class="logo" style="width:36px;height:36px;border-radius:11px"><svg class="ico" style="color:#fff;width:20px;height:20px"><use href="#i-steady"/></svg></span><span class="word">steady</span></div>
+          <div>
+            <h1 class="h1" style="font-size:32px; line-height:38px; letter-spacing:-1.1px">Save for what matters, on every payday.</h1>
+            <p class="sub">Steady looks at your real spending and suggests an amount you can save each month without feeling it.</p>
+          </div>
+          <div class="hero-amt" style="background:var(--a-canvas)">
+            <div class="mini-row"><span class="badge b-travel"><svg class="ico"><use href="#i-plane"/></svg></span><div><div class="h3" style="font-size:15px">Japan trip</div><div class="cap-t num">€900 of €2,000</div></div><span class="num" style="font-weight:600">45%</span></div>
+            <div class="track"><i style="width:45%; background:var(--g-travel)"></i></div>
+            <div class="mini-row"><span class="badge b-emergency"><svg class="ico"><use href="#i-shield"/></svg></span><div><div class="h3" style="font-size:15px">Emergency fund</div><div class="cap-t num">€780 of €4,600</div></div><span class="num" style="font-weight:600">17%</span></div>
+            <div class="track"><i style="width:17%; background:var(--g-emergency)"></i></div>
+          </div>
+          <div class="values">
+            <div class="value"><span class="badge b-brand"><svg class="ico s"><use href="#i-cal"/></svg></span><div><b>One save a month</b><span class="small">Moves on payday, before spending starts.</span></div></div>
+            <div class="value"><span class="badge b-brand"><svg class="ico s"><use href="#i-spark"/></svg></span><div><b>An amount that fits you</b><span class="small">Suggested from your last 3 months.</span></div></div>
+          </div>
+        </div>
+        <div class="foot"><button class="btn primary" data-next="s2">Get started</button><button class="btn ghost">I already have an account</button></div>
+      </div>
+    </div>
+
+    <!-- 02 Connect bank -->
+    <div class="shot"><div class="cap"><span>02</span>Connect your bank</div>
+      <div class="phone" id="s2" data-status>
+        <div class="screen">
+          <div class="stephead"><button class="back" aria-label="Back"><svg class="ico"><use href="#i-left"/></svg></button><div class="steps"><i class="on"></i><i></i><i></i><i></i><i></i></div><span class="cap-t" style="color:var(--a-ink3)">1 of 5</span></div>
+          <div><h1 class="h1">Connect your main account</h1><p class="sub">Pick the account your salary goes into. We use it to understand your spending.</p></div>
+          <div class="search"><svg class="ico s"><use href="#i-search"/></svg><span>Search banks</span></div>
+          <div class="list" role="radiogroup" aria-label="Bank" id="banks">
+            <button class="bank" role="radio" aria-checked="true" data-bank="Erste Bank"><span class="init">EB</span><span class="nm">Erste Bank</span><span class="radio"><svg class="ico xs" style="stroke-width:3"><use href="#i-check"/></svg></span></button>
+            <button class="bank" role="radio" aria-checked="false" data-bank="Revolut"><span class="init">RV</span><span class="nm">Revolut</span><span class="radio"><svg class="ico xs" style="stroke-width:3"><use href="#i-check"/></svg></span></button>
+            <button class="bank" role="radio" aria-checked="false" data-bank="N26"><span class="init">N2</span><span class="nm">N26</span><span class="radio"><svg class="ico xs" style="stroke-width:3"><use href="#i-check"/></svg></span></button>
+            <button class="bank" role="radio" aria-checked="false" data-bank="Raiffeisen"><span class="init">RB</span><span class="nm">Raiffeisen</span><span class="radio"><svg class="ico xs" style="stroke-width:3"><use href="#i-check"/></svg></span></button>
+            <button class="bank" role="radio" aria-checked="false" data-bank="UniCredit Bank Austria"><span class="init">UC</span><span class="nm">UniCredit Bank Austria</span><span class="radio"><svg class="ico xs" style="stroke-width:3"><use href="#i-check"/></svg></span></button>
+          </div>
+          <div class="secure"><svg class="ico s" style="margin-top:1px"><use href="#i-lock"/></svg><p>Read-only access. Steady can see transactions but can never move money without your approval. Disconnect anytime.</p></div>
+        </div>
+        <div class="foot"><button class="btn primary" data-next="s3" id="bankCta">Continue with Erste Bank</button></div>
+      </div>
+    </div>
+
+    <!-- 03 Income & payday -->
+    <div class="shot"><div class="cap"><span>03</span>Income and payday</div>
+      <div class="phone" id="s3" data-status>
+        <div class="screen">
+          <div class="stephead"><button class="back" aria-label="Back"><svg class="ico"><use href="#i-left"/></svg></button><div class="steps"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></div><span class="cap-t" style="color:var(--a-ink3)">2 of 5</span></div>
+          <div><h1 class="h1">What do you earn each month?</h1><p class="sub">After tax. Together with your spending, this sets your suggested amount.</p></div>
+          <div>
+            <p class="label"><label for="income">Monthly income</label></p>
+            <div class="amount-field"><span>€</span><input id="income" inputmode="numeric" value="2,800" aria-label="Monthly income in euros"></div>
+          </div>
+          <div class="found"><span class="badge b-brand" style="width:32px;height:32px;border-radius:10px"><svg class="ico s"><use href="#i-wallet"/></svg></span><p><b>We found your salary.</b> About €2,790 arrives from Nordwind GmbH around the 25th of each month.</p></div>
+          <div>
+            <p class="label">When do you get paid?</p>
+            <div class="chips" id="payday">
+              <button class="chip" aria-pressed="false" data-day="1st">1st</button>
+              <button class="chip" aria-pressed="false" data-day="15th">15th</button>
+              <button class="chip" aria-pressed="true" data-day="25th">25th</button>
+              <button class="chip" aria-pressed="false" data-day="last day">Last day</button>
+            </div>
+            <p class="hint" style="margin-top:12px"><svg class="ico xs" style="margin-top:1px"><use href="#i-cal"/></svg><span id="paydayNote">Your monthly save moves on the 25th, right after your salary lands.</span></p>
+          </div>
+        </div>
+        <div class="foot"><button class="btn primary" data-next="s4">Continue</button></div>
+      </div>
+    </div>
+
+    <!-- 04 Goals -->
+    <div class="shot"><div class="cap"><span>04</span>Choose goals</div>
+      <div class="phone" id="s4" data-status>
+        <div class="screen">
+          <div class="stephead"><button class="back" aria-label="Back"><svg class="ico"><use href="#i-left"/></svg></button><div class="steps"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></div><span class="cap-t" style="color:var(--a-ink3)">3 of 5</span></div>
+          <div><h1 class="h1">What are you saving for?</h1><p class="sub">Pick one or more. You can add or change goals anytime.</p></div>
+          <div class="tiles" id="tiles">
+            <button class="tile" aria-pressed="true" data-goal="travel"><span class="top"><span class="badge b-travel"><svg class="ico"><use href="#i-plane"/></svg></span><span class="chk"><svg class="ico xs" style="stroke-width:3"><use href="#i-check"/></svg></span></span><span><b>Travel</b><span class="small">Trips and holidays</span></span></button>
+            <button class="tile" aria-pressed="true" data-goal="emergency"><span class="top"><span class="badge b-emergency"><svg class="ico"><use href="#i-shield"/></svg></span><span class="chk"><svg class="ico xs" style="stroke-width:3"><use href="#i-check"/></svg></span></span><span><b>Emergency fund</b><span class="small">Your safety net</span></span></button>
+            <button class="tile" aria-pressed="false" data-goal="car"><span class="top"><span class="badge b-car"><svg class="ico"><use href="#i-car"/></svg></span><span class="chk"><svg class="ico xs" style="stroke-width:3"><use href="#i-check"/></svg></span></span><span><b>A car</b><span class="small">New or used</span></span></button>
+            <button class="tile" aria-pressed="false" data-goal="move"><span class="top"><span class="badge b-move"><svg class="ico"><use href="#i-box"/></svg></span><span class="chk"><svg class="ico xs" style="stroke-width:3"><use href="#i-check"/></svg></span></span><span><b>A move</b><span class="small">Deposit and moving costs</span></span></button>
+          </div>
+          <div class="hint"><svg class="ico xs" style="margin-top:1px"><use href="#i-spark"/></svg><span>Most people start with an emergency fund plus one thing they're excited about.</span></div>
+        </div>
+        <div class="foot"><button class="btn primary" data-next="s5" id="goalsCta">Continue with 2 goals</button></div>
+      </div>
+    </div>
+
+    <!-- 05 Targets -->
+    <div class="shot"><div class="cap"><span>05</span>Set targets</div>
+      <div class="phone" id="s5" data-status>
+        <div class="screen">
+          <div class="stephead"><button class="back" aria-label="Back"><svg class="ico"><use href="#i-left"/></svg></button><div class="steps"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div><span class="cap-t" style="color:var(--a-ink3)">4 of 5</span></div>
+          <div><h1 class="h1">How much, and by when?</h1><p class="sub">A rough number is fine. You can change it later.</p></div>
+          <div id="targets" style="display:flex; flex-direction:column; gap:12px"></div>
+        </div>
+        <div class="foot"><button class="btn primary" data-next="s6">See my plan</button></div>
+      </div>
+    </div>
+
+    <!-- 06 AI plan -->
+    <div class="shot"><div class="cap"><span>06</span>Your suggested plan<em>Full scroll</em></div>
+      <div class="phone tall" id="s6" data-status>
+        <div class="screen">
+          <div class="stephead"><button class="back" aria-label="Back"><svg class="ico"><use href="#i-left"/></svg></button><div class="steps"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div><span class="cap-t" style="color:var(--a-ink3)">5 of 5</span></div>
+          <div style="display:flex; flex-direction:column; gap:12px">
+            <span class="pill"><svg class="ico s"><use href="#i-spark"/></svg>Steady suggestion</span>
+            <h1 class="h1">You can comfortably save <span id="planHead" class="num">€420</span> each payday.</h1>
+            <p class="sub" style="margin:0">Based on your last 3 months of spending.</p>
+          </div>
+          <div class="card" style="display:flex; flex-direction:column; gap:14px">
+            <div class="stack" id="stack"></div>
+            <div class="rows">
+              <div class="row"><span class="k">Monthly income</span><span class="v num" id="rIncome">€2,800</span></div>
+              <div class="row"><span class="k"><i style="background:var(--a-ink)"></i>Bills and essentials</span><span class="v num">−€1,540</span></div>
+              <div class="row"><span class="k"><i style="background:var(--a-line2)"></i>Everyday spending</span><span class="v num">−€840</span></div>
+              <div class="row total"><span class="k"><i style="background:var(--a-brand)"></i>Comfortable to save</span><span class="v num" id="rSave">€420</span></div>
+            </div>
+          </div>
+          <div>
+            <p class="label">Choose your monthly amount</p>
+            <div class="seg" id="opts"></div>
+            <p class="hint" style="margin-top:10px" id="optNote"></p>
+          </div>
+          <div class="card">
+            <div class="sec-h" style="margin-bottom:14px"><span class="h3" style="font-size:15px">How it's split</span><button class="link">Adjust</button></div>
+            <div class="split" id="split"></div>
+          </div>
+        </div>
+        <div class="foot"><button class="btn primary" data-next="s7" id="planCta">Save €420 on the 25th</button><p class="cap-t" style="text-align:center; margin:0 0 4px">You can pause or change this anytime.</p></div>
+      </div>
+    </div>
+
+    <!-- 07 Done -->
+    <div class="shot"><div class="cap"><span>07</span>All set</div>
+      <div class="phone white" id="s7" data-status>
+        <div class="screen" style="justify-content:center; gap:28px">
+          <div style="display:flex; flex-direction:column; gap:20px; align-items:flex-start">
+            <span class="done-mark"><svg class="ico"><use href="#i-check"/></svg></span>
+            <div><h1 class="h1">You're all set, Alex.</h1><p class="sub" id="doneSub">Your first €420 moves on 25 October, right after your salary arrives.</p></div>
+          </div>
+          <div class="card" style="background:var(--a-canvas); display:flex; flex-direction:column; gap:14px" id="doneList"></div>
+          <div class="hint"><svg class="ico xs" style="margin-top:1px"><use href="#i-bell"/></svg><span>We'll send one short note the day before each save. Nothing else.</span></div>
+        </div>
+        <div class="foot"><button class="btn dark" data-next="s8">Go to my dashboard</button></div>
+      </div>
+    </div>
+  </section>
+
+  <h2 class="group">Home dashboard</h2>
+  <section class="board">
+    <div class="shot"><div class="cap"><span>08</span>Home<em>Full scroll · 4 months in</em></div>
+      <div class="phone tall" id="s8" data-status>
+        <div class="screen" style="gap:20px; padding-bottom:24px">
+          <div class="topbar"><span class="avatar">A</span><div style="flex:1"><div class="cap-t">Good morning</div><div class="h3">Alex</div></div><button class="iconbtn" aria-label="Notifications"><svg class="ico"><use href="#i-bell"/></svg><span class="dot"></span></button></div>
+
+          <div class="total-card">
+            <div style="display:flex; flex-direction:column; gap:6px">
+              <span class="lbl">Total saved</span>
+              <span class="big num" id="dTotal">€1,680</span>
+              <span class="gain"><svg class="ico s"><use href="#i-up"/></svg><span class="num">+€420 on 25 Jan</span></span>
+            </div>
+            <div class="next">
+              <span class="badge" style="background:rgba(255,255,255,.16); color:#fff; width:40px; height:40px; border-radius:12px"><svg class="ico s"><use href="#i-cal"/></svg></span>
+              <div><div class="t1">Next save · in 6 days</div><div class="t2 num">€420 on 25 Feb</div></div>
+              <button class="btn sm">Review</button>
+            </div>
+          </div>
+
+          <div class="tip" id="tip">
+            <div style="display:flex; gap:10px; align-items:center"><span class="pill" style="height:26px"><svg class="ico xs"><use href="#i-spark"/></svg>Steady noticed</span></div>
+            <p>You've spent <b class="num">€64</b> less on eating out than usual this month. Want to move it to your Japan trip?</p>
+            <div class="acts"><button class="btn sm primary" id="addExtra">Add €64</button><button class="btn sm secondary" id="dismissTip">Not now</button></div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:12px">
+            <div class="sec-h"><span class="h3">Your goals</span><button class="link"><svg class="ico s"><use href="#i-plus"/></svg>Add goal</button></div>
+            <div class="gcard">
+              <div class="r"><span class="badge b-travel"><svg class="ico"><use href="#i-plane"/></svg></span><div><div style="font-weight:600">Japan trip</div><div class="small num" id="dTravelTxt">€900 of €2,000</div></div><span class="pct" id="dTravelPct">45%</span></div>
+              <div class="track"><i id="dTravelBar" style="width:45%; background:var(--g-travel)"></i></div>
+              <div class="gfoot"><svg class="ico xs"><use href="#i-cal"/></svg><span class="num">€225 on payday · by Jun 2027</span><span class="tag ok"><svg class="ico xs" style="stroke-width:2.6"><use href="#i-check"/></svg>On track</span></div>
+            </div>
+            <div class="gcard">
+              <div class="r"><span class="badge b-emergency"><svg class="ico"><use href="#i-shield"/></svg></span><div><div style="font-weight:600">Emergency fund</div><div class="small num">€780 of €4,600</div></div><span class="pct">17%</span></div>
+              <div class="track"><i style="width:17%; background:var(--g-emergency)"></i></div>
+              <div class="gfoot"><svg class="ico xs"><use href="#i-cal"/></svg><span class="num">€195 on payday</span><span class="tag" style="color:var(--a-ink2)">Ready by Sep 2028</span></div>
+            </div>
+          </div>
+
+          <div class="card" style="display:flex; flex-direction:column; gap:12px">
+            <div class="sec-h"><span class="h3" style="font-size:15px">February so far</span><span class="cap-t num">19 of 28 days</span></div>
+            <div class="track"><i style="width:68%; background:var(--a-ink)"></i></div>
+            <div class="small num" style="display:flex; justify-content:space-between"><span>€1,610 spent</span><span>usually €2,380 a month</span></div>
+            <div class="hint" style="color:var(--a-pos)"><svg class="ico xs" style="margin-top:1px; stroke-width:2.6"><use href="#i-check"/></svg><span>You're on a normal pace. Your €420 save is covered.</span></div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:12px">
+            <div class="sec-h"><span class="h3">Recent saves</span><button class="link">See all<svg class="ico s"><use href="#i-right"/></svg></button></div>
+            <div class="card" id="acts">
+              <div class="act"><span class="badge b-brand"><svg class="ico s"><use href="#i-down"/></svg></span><div><div style="font-weight:600">Payday save</div><div class="cap-t">25 Jan · Japan trip, Emergency fund</div></div><span class="v">+€420</span></div>
+              <div class="act"><span class="badge b-brand"><svg class="ico s"><use href="#i-down"/></svg></span><div><div style="font-weight:600">Payday save</div><div class="cap-t">25 Dec · Japan trip, Emergency fund</div></div><span class="v">+€420</span></div>
+              <div class="act"><span class="badge b-brand"><svg class="ico s"><use href="#i-down"/></svg></span><div><div style="font-weight:600">Payday save</div><div class="cap-t">25 Nov · Japan trip, Emergency fund</div></div><span class="v">+€420</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="tabbar">
+          <div class="tabs">
+            <button class="tab on"><svg class="ico"><use href="#i-home"/></svg>Home</button>
+            <button class="tab"><svg class="ico"><use href="#i-target"/></svg>Goals</button>
+            <button class="tab"><svg class="ico"><use href="#i-list"/></svg>Activity</button>
+            <button class="tab"><svg class="ico"><use href="#i-user"/></svg>Profile</button>
+          </div>
+          <div class="home"><i></i></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+  // status bars + home indicators
+  const st = document.getElementById('tpl-status');
+  document.querySelectorAll('[data-status]').forEach(p => {
+    p.prepend(st.content.cloneNode(true));
+    if (!p.querySelector('.tabbar')) { const h=document.createElement('div'); h.className='home'; h.innerHTML='<i></i>'; p.appendChild(h); }
+  });
+
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll('[data-next]').forEach(b => b.addEventListener('click', () => {
+    const t = document.getElementById(b.dataset.next);
+    t.scrollIntoView({behavior: reduce ? 'auto' : 'smooth', block:'center', inline:'center'});
+    t.classList.add('flash'); setTimeout(() => t.classList.remove('flash'), 1200);
+  }));
+
+  const eur = n => '€' + Math.round(n).toLocaleString('en-US');
+  const r5 = n => Math.round(n/5)*5;
+  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const mLabel = i => { const m = 9 + i; return MONTHS[m % 12] + ' ' + (2026 + Math.floor(m/12)); }; // index 0 = Oct 2026 (first payday)
+  const MONTH_OPTS = Array.from({length:48}, (_, i) => i);
+
+  const S = {
+    income: 2800, essentials: 1540, spending: 840, option: 'suggested', payday: '25th', bank: 'Erste Bank',
+    goals: {
+      travel:    {on:true,  name:'Japan trip',     label:'Travel',         icon:'plane',  cls:'travel',    target:2000, by:8},
+      emergency: {on:true,  name:'Emergency fund', label:'Emergency fund', icon:'shield', cls:'emergency', target:4600, by:null},
+      car:       {on:false, name:'First car',      label:'A car',          icon:'car',    cls:'car',       target:8000, by:26},
+      move:      {on:false, name:'Moving out',     label:'A move',         icon:'box',    cls:'move',      target:3500, by:10},
+    }
+  };
+  const active = () => Object.entries(S.goals).filter(([,g]) => g.on);
+  const options = () => { const s = r5(Math.max(0, S.income - S.essentials - S.spending)); return {gentle: r5(s*0.7), suggested: s, stretch: s + 100}; };
+  const amount = () => options()[S.option];
+
+  function split(total){
+    const a = active(); if (!a.length || total <= 0) return [];
+    const w = a.map(([,g]) => g.target / (g.by == null ? 24 : g.by + 1));
+    const sum = w.reduce((x,y)=>x+y,0);
+    let left = total;
+    return a.map(([k,g],i) => { const m = i === a.length-1 ? left : r5(total*w[i]/sum); left -= m; return {k,g,m}; });
+  }
+  function status(g, m){
+    if (m <= 0) return {txt:'Not funded yet', cls:'late'};
+    const ready = Math.ceil(g.target / m) - 1;
+    if (g.by == null) return {txt:'Ready by ' + mLabel(ready), cls:''};
+    if (ready <= g.by) return {txt:'On track for ' + mLabel(g.by), cls:'ok'};
+    const d = ready - g.by; return {txt: d + (d===1?' month':' months') + ' after your date', cls:'late'};
+  }
+  const icon = (id, c='') => `<svg class="ico ${c}"><use href="#i-${id}"/></svg>`;
+
+  // targets screen
+  function renderTargets(){
+    const box = document.getElementById('targets');
+    box.innerHTML = active().map(([k,g]) => `
+      <div class="tcard">
+        <div class="head"><span class="badge b-${g.cls}">${icon(g.icon)}</span><div style="flex:1;min-width:0"><div class="cap-t">${g.label}</div><div style="font-weight:600">${g.name}</div></div><button class="link" aria-label="Rename ${g.name}">Rename</button></div>
+        <div class="fields">
+          <div class="field"><label for="t-${k}">Target</label><input id="t-${k}" data-k="${k}" class="num" inputmode="numeric" value="€${g.target.toLocaleString('en-US')}"></div>
+          <div class="field"><label for="d-${k}">By</label><select id="d-${k}" data-k="${k}"><option value="">No deadline</option>${MONTH_OPTS.map(i=>`<option value="${i}" ${g.by===i?'selected':''}>${mLabel(i)}</option>`).join('')}</select></div>
+        </div>
+        ${k==='emergency' ? `<div class="hint">${icon('spark','xs')}<span>3 months of your essentials is about €4,600. A good first target.</span></div>` : ''}
+      </div>`).join('') || '<p class="sub">Pick at least one goal on the previous screen.</p>';
+    box.querySelectorAll('input').forEach(i => i.addEventListener('change', () => {
+      const v = parseInt(i.value.replace(/[^\d]/g,''),10); if (v > 0) S.goals[i.dataset.k].target = v;
+      i.value = eur(S.goals[i.dataset.k].target); renderPlan();
+    }));
+    box.querySelectorAll('select').forEach(s => s.addEventListener('change', () => { S.goals[s.dataset.k].by = s.value === '' ? null : +s.value; renderPlan(); }));
+  }
+
+  function renderPlan(){
+    const o = options(), amt = amount();
+    document.getElementById('planHead').textContent = eur(o.suggested);
+    document.getElementById('rIncome').textContent = eur(S.income);
+    document.getElementById('rSave').textContent = eur(o.suggested);
+    const tot = Math.max(S.income, 1);
+    document.getElementById('stack').innerHTML =
+      `<i style="width:${S.essentials/tot*100}%;background:var(--a-ink)"></i><i style="width:${S.spending/tot*100}%;background:var(--a-line2)"></i><i style="flex:1;background:var(--a-brand)"></i>`;
+    document.getElementById('opts').innerHTML = [['gentle','Gentle'],['suggested','Suggested'],['stretch','Stretch']].map(([k,l]) =>
+      `<button class="opt" aria-pressed="${S.option===k}" data-o="${k}"><span>${l}</span><b>${eur(o[k])}</b></button>`).join('');
+    document.querySelectorAll('#opts .opt').forEach(b => b.addEventListener('click', () => { S.option = b.dataset.o; renderPlan(); }));
+    const notes = {
+      gentle: `Leaves ${eur(o.suggested - o.gentle)} extra each month for everyday spending.`,
+      suggested: `Fits your usual spending with no changes.`,
+      stretch: `Means about ${eur(100)} less for everyday spending each month.`
+    };
+    document.getElementById('optNote').innerHTML = icon('spark','xs') + `<span>${notes[S.option]}</span>`;
+    const sp = split(amt);
+    document.getElementById('split').innerHTML = sp.map(({g,m}) => { const s = status(g,m); return `
+      <div class="split-row"><span class="badge b-${g.cls}" style="width:40px;height:40px;border-radius:12px">${icon(g.icon,'s')}</span>
+        <div><div style="font-weight:600">${g.name}</div><div class="cap-t ${s.cls}">${s.txt}</div></div>
+        <div class="amt">${eur(m)}<small>per month</small></div></div>`; }).join('') || '<p class="small">No goals selected.</p>';
+    const pd = S.payday === 'last day' ? 'the last day' : 'the ' + S.payday;
+    document.getElementById('planCta').textContent = `Save ${eur(amt)} on ${pd}`;
+    const first = S.payday === 'last day' ? '31 October' : (S.payday === '1st' ? '1 November' : S.payday.replace(/\D/g,'') + ' October');
+    document.getElementById('doneSub').textContent = `Your first ${eur(amt)} moves on ${first}, right after your salary arrives.`;
+    document.getElementById('doneList').innerHTML = sp.map(({g,m}) => `
+      <div class="split-row"><span class="badge b-${g.cls}" style="width:40px;height:40px;border-radius:12px">${icon(g.icon,'s')}</span>
+        <div><div style="font-weight:600">${g.name}</div><div class="cap-t">${eur(g.target)} goal</div></div><div class="amt">${eur(m)}<small>each payday</small></div></div>`).join('');
+  }
+
+  // bank
+  document.querySelectorAll('#banks .bank').forEach(b => b.addEventListener('click', () => {
+    document.querySelectorAll('#banks .bank').forEach(x => x.setAttribute('aria-checked', x === b));
+    S.bank = b.dataset.bank; document.getElementById('bankCta').textContent = 'Continue with ' + S.bank;
+  }));
+  // income
+  const inc = document.getElementById('income');
+  inc.addEventListener('input', () => { const v = parseInt(inc.value.replace(/[^\d]/g,''),10) || 0; S.income = v; renderPlan(); });
+  inc.addEventListener('blur', () => { inc.value = S.income.toLocaleString('en-US'); });
+  // payday
+  document.querySelectorAll('#payday .chip').forEach(c => c.addEventListener('click', () => {
+    document.querySelectorAll('#payday .chip').forEach(x => x.setAttribute('aria-pressed', x === c));
+    S.payday = c.dataset.day;
+    document.getElementById('paydayNote').textContent = `Your monthly save moves on the ${S.payday}, right after your salary lands.`;
+    renderPlan();
+  }));
+  // goals
+  document.querySelectorAll('#tiles .tile').forEach(t => t.addEventListener('click', () => {
+    const g = S.goals[t.dataset.goal]; g.on = !g.on; t.setAttribute('aria-pressed', g.on);
+    const n = active().length;
+    const cta = document.getElementById('goalsCta');
+    cta.textContent = n ? `Continue with ${n} goal${n>1?'s':''}` : 'Pick at least one goal';
+    cta.disabled = !n; cta.style.opacity = n ? 1 : .4;
+    renderTargets(); renderPlan();
+  }));
+  // dashboard tip
+  const tip = document.getElementById('tip');
+  document.getElementById('addExtra').addEventListener('click', () => {
+    document.getElementById('dTotal').textContent = '€1,744';
+    document.getElementById('dTravelTxt').textContent = '€964 of €2,000';
+    document.getElementById('dTravelPct').textContent = '48%';
+    document.getElementById('dTravelBar').style.width = '48.2%';
+    tip.outerHTML = `<div class="toast" id="tip">${icon('check','s')}<span>Added €64 to Japan trip.</span></div>`;
+    const acts = document.getElementById('acts');
+    acts.insertAdjacentHTML('afterbegin', `<div class="act"><span class="badge b-travel">${icon('plane','s')}</span><div><div style="font-weight:600">Extra save</div><div class="cap-t">Today · Japan trip</div></div><span class="v">+€64</span></div>`);
+  });
+  document.getElementById('dismissTip').addEventListener('click', () => { tip.hidden = true; });
+
+  renderTargets(); renderPlan();
+})();
+</script>
